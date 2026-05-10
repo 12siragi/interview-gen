@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+# Environment — NEVER copy secrets into the container
+.env
+
+# Virtual environments (if someone ran pip locally by mistake)
+venv/
+.venv/
+env/
+
+# IDE files
+.vscode/
+.idea/
+*.DS_Store
+
+# Git
+.git/
+.gitignore

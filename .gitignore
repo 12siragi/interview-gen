@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment — NEVER commit secrets
+.env
+*.env
+
+# Database
+*.sqlite3
+
+# Virtual environments
+venv/
+.venv/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Docker
+*.log
+
+# IDE
+.vscode/
+.idea/
+.DS_Store

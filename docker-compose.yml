@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: interview_gen_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount backend code into container
+      # Any code change reflects instantly — no rebuild needed
+      - ./backend:/app
+    env_file:
+      # Load .env file at runtime — secrets never baked into image
+      - ./backend/.env
+    restart: unless-stopped
