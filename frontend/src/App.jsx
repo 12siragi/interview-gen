@@ -2,10 +2,18 @@ import { useState } from "react";
 import { fetchInterviewQuestions } from "./api";
 import "./App.css";
 
+const LOADING_MESSAGES = [
+  "Consulting the hiring committee...",
+  "Brewing interview questions...",
+  "Thinking like an HR expert...",
+  "Crafting the perfect questions...",
+];
+
 export default function App() {
   const [jobTitle, setJobTitle] = useState("Customer Success Manager");
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState("");
   const [error, setError] = useState(null);
 
   async function handleSubmit(e) {
@@ -13,6 +21,8 @@ export default function App() {
     const trimmed = jobTitle.trim();
     if (!trimmed) return;
 
+    // Pick a random loading message each time so it feels alive
+    setLoadingMsg(LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]);
     setLoading(true);
     setError(null);
     setQuestions([]);
@@ -21,7 +31,9 @@ export default function App() {
       const result = await fetchInterviewQuestions(trimmed);
       setQuestions(result);
     } catch (err) {
-      setError(err.message);
+      // Show the exact message from the backend (e.g. "Please enter a valid job title")
+      // instead of a generic fallback — the backend already writes user-friendly messages
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -46,7 +58,11 @@ export default function App() {
               type="text"
               className="input"
               value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
+              onChange={(e) => {
+                setJobTitle(e.target.value);
+                // Clear error as soon as the user starts correcting their input
+                if (error) setError(null);
+              }}
               placeholder="e.g. Customer Success Manager"
               disabled={loading}
               required
@@ -58,7 +74,7 @@ export default function App() {
             disabled={loading || !jobTitle.trim()}
           >
             {loading ? (
-              <><span className="spinner" />Generating questions...</>
+              <><span className="spinner" />{loadingMsg}</>
             ) : (
               "Generate Questions"
             )}
@@ -67,7 +83,7 @@ export default function App() {
 
         {error && (
           <div className="error-box" role="alert">
-            <strong>Something went wrong:</strong> {error}
+            {error}
           </div>
         )}
 

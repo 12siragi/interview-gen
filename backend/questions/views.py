@@ -16,6 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .ai_service import generate_interview_questions
+from .exceptions import InvalidJobTitleError
 from .serializers import QuestionRequestSerializer
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ class GenerateQuestionsView(APIView):
     Returns:  { "questions": ["Q1?", "Q2?", "Q3?"] }
 
     Error responses:
-      400 — invalid input (blank, too short, too long)
+      400 — invalid input (blank, too short, too long, not a real job title)
       500 — AI provider error or parse failure
     """
 
@@ -48,9 +49,9 @@ class GenerateQuestionsView(APIView):
             )
 
         job_title = serializer.validated_data["job_title"]
-        client_ip = request.META.get("HTTP_X_FORWARDED_FOR", 
+        client_ip = request.META.get("HTTP_X_FORWARDED_FOR",
                     request.META.get("REMOTE_ADDR", "unknown"))
-        logger.info("generate_request ip=%s title_length=%d", 
+        logger.info("generate_request ip=%s title_length=%d",
                    client_ip, len(job_title))
 
         # ── Step 2: Generate questions ────────────────────────────────────────
@@ -66,8 +67,19 @@ class GenerateQuestionsView(APIView):
                 status=status.HTTP_200_OK,
             )
 
+        except InvalidJobTitleError:
+            # Raised by validators.py (local check) or ai_service.py (AI check)
+            # This is a user error — return 400 with a helpful message
+            logger.warning(
+                "Invalid job title rejected: '%s'", job_title
+            )
+            return Response(
+                {"error": "Please enter a valid job title (e.g. Software Engineer, Nurse, CEO)."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         except ValueError as exc:
-            # Configuration error or parse failure
+            # Configuration error or parse failure — not the user's fault
             # Log full detail — return safe message to client
             logger.error(
                 "ValueError generating questions for '%s': %s",
