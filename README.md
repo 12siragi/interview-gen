@@ -3,8 +3,7 @@
 A full-stack AI-powered web app that generates 3 tailored interview questions
 for any job title in seconds.
 
-**Live demo:** YOUR_LIVE_URL  
-**Built by:** YOUR_NAME
+**Built by:** saidi siragi
 
 ---
 
