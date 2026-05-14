@@ -60,7 +60,7 @@ User input is sandwiched between instructions. Someone typing
 | AI Provider (primary) | Groq — Llama 3.1 8B |
 | AI Provider (fallback) | Google Gemini 2.0 Flash |
 | Hosting (frontend) | Vercel |
-| Hosting (backend) | YOUR_BACKEND_HOST |
+| Hosting (backend) | Render |
 | Containerisation | Docker + Docker Compose |
 
 ---
@@ -111,8 +111,7 @@ docker-compose.yml    — runs backend locally with one command
 
 ```bash
 # 1. Clone the repo
-git clone YOUR_REPO_URL
-cd YOUR_REPO_NAME
+
 
 # 2. Set up environment variables
 cp backend/.env.example backend/.env
